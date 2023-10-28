@@ -151,7 +151,7 @@ end)
 autotoggles2:NewButton("Creep", nil, function()
     _G.chosenenemy = 1
 end)
-autotoggles2:addButton("Friend Bonus", function()
+autotoggles2:addButton("Friend Bonus", nil, function()
     game:GetService("ReplicatedStorage").Packages._Index["sleitnick_knit@1.4.7"].knit.Services.GameService.RF.RequestIncrementFriendCount:InvokeServer(5010962319)
     game:GetService("ReplicatedStorage").Packages._Index["sleitnick_knit@1.4.7"].knit.Services.GameService.RF.RequestIncrementFriendCount:InvokeServer(2019875828)
     game:GetService("ReplicatedStorage").Packages._Index["sleitnick_knit@1.4.7"].knit.Services.GameService.RF.RequestIncrementFriendCount:InvokeServer(1514104177)
