@@ -37,7 +37,7 @@ function autoattack()
 end
 function autofight()
     while _G.auto1 do
-        task.wait(0.05)
+        task.wait()
         fightenemy:InvokeServer()
     end
 end
@@ -57,8 +57,8 @@ end
 function normalcombat()
     while _G.auto2 do
         fightinit:InvokeServer(_G.chosenenemy)
-        task.wait()
-        startfight:InvokeServer
+        --task.wait()
+        startfight:InvokeServer()
         weaponattack:FireServer()
         task.wait()
     end
