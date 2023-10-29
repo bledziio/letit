@@ -8,7 +8,7 @@ _G.auto5 = false
 _G.enemyval = "None"
 _G.chosenenemy = 2
 _G.enemydifficulty = 2.3
-_G.eggzone = 5
+_G.eggzone = 6
 _G.eggquant = 8
 local task_defer = task.defer
 local weaponattack = game:GetService("ReplicatedStorage").Packages._Index["sleitnick_knit@1.4.7"].knit.Services.GameService.RE.PlayerAttackStart
@@ -31,7 +31,7 @@ local REspinwheelreward = game:GetService("ReplicatedStorage").Packages["_Index"
 --:InvokeServer()
 function autoattack()
     while _G.auto do
-        task.wait(0.05)
+        task.wait()
         weaponattack:FireServer()
     end
 end
@@ -56,38 +56,10 @@ function selectenemy(currentOption)
 end
 function normalcombat()
     while _G.auto2 do
-        --requestforfeit:InvokeServer()
-        --task.wait()
         fightinit:InvokeServer(_G.chosenenemy)
         task.wait()
-        startfight:InvokeServer()
-        task.wait()
-    end
-end
-function highestbosscombat()
-    teleporttozone(1)
-    local i = 1 -- initialize the counter
-    repeat
-        fightinit:InvokeServer(1)
-        task.wait()
-        startfight:InvokeServer()
-        task.wait()
-        i = i + 1
-    until i > 10
-    local n = 1
-    task.wait() -- initialize the counter
-    repeat
-        fightinit:InvokeServer(4)
-        task.wait()
-        startfight:InvokeServer()
-        task.wait()
-        n = i + 1
-    until n > 10
-    teleporttozone(5)
-    while _G.auto3 do
-        fightinit:InvokeServer(4)
-        task.wait()
-        startfight:InvokeServer()
+        startfight:InvokeServer
+        weaponattack:FireServer()
         task.wait()
     end
 end
@@ -152,7 +124,9 @@ autotoggles2:NewButton("Creep", nil, function()
     _G.chosenenemy = 1
 end)
 
-
+worlds:NewButton("Robot", nil, function()
+    teleporttozone(7)
+end)
 worlds:NewButton("Fire", nil, function()
     teleporttozone(6)
 end)
@@ -177,7 +151,7 @@ eggconfig:NewToggle("Open Eggs", nil, function(value)
     _G.auto4 = value
     task_defer(openmultieggs())
 end)
-eggconfig:NewDropdown("Egg Zone", nil, {6,5,4,3,2,1}, function(currentOption)
+eggconfig:NewDropdown("Egg Zone", nil, {7,6,5,4,3,2,1}, function(currentOption)
     _G.eggzone = currentOption
 end)
 eggconfig:NewDropdown("Egg Amount", nil, {1,8}, function(currentOption)
