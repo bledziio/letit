@@ -11,6 +11,7 @@ _G.enemydifficulty = 2.3
 _G.eggzone = 6
 _G.eggquant = 8
 local task_defer = task.defer
+local weaponattack2 = game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.4.7"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("GameService"):WaitForChild("RE"):WaitForChild("PlayerAttackStart")
 local weaponattack = game:GetService("ReplicatedStorage").Packages._Index["sleitnick_knit@1.4.7"].knit.Services.GameService.RE.PlayerAttackStart
 local fightenemy = game:GetService("ReplicatedStorage").Packages._Index["sleitnick_knit@1.4.7"].knit.Services.GameService.RF.RequestPlayerFightModeAttack
 local requestcombat = game:GetService("ReplicatedStorage").Packages._Index["sleitnick_knit@1.4.7"].knit.Services.GameService.RF.RequestAutoCombat
@@ -33,6 +34,7 @@ function autoattack()
     while _G.auto do
         task.wait()
         weaponattack:FireServer()
+	weaponattack2:FireServer()
     end
 end
 function autofight()
