@@ -1,0 +1,79 @@
+
+_G.auto4 = false
+_G.auto2 = false
+_G.auto1 = false
+_G.auto3 = false
+_G.auto5 = false
+local task_defer = task.defer
+local eggnumber = "001"
+function autoTrain()
+    while _G.auto1 do
+        for i=1,6 do
+            local trainer = "TrainPower"
+            trainer = trainer .. string.format("%03d", i)
+            game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Game"):WaitForChild("Re_TrainPower"):FireServer()
+            task.wait() 
+            game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Game"):WaitForChild("Re_TrainPower"):FireServer(trainer)
+            task.wait()   
+        end    
+    end
+end
+
+function autoFight()
+    while _G.auto2 do
+        local repeatCount = 70
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Fight"):WaitForChild("Re_ChallengeStart"):FireServer(1)
+        task.wait(0.5)
+        repeat
+            for i=1,7 do
+                local npc = "Npc"
+                npc = npc .. string.format("%03d", i)
+                game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Fight"):WaitForChild("Re_TakeDamage"):FireServer(unpack({npc,1}))
+                game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Fight"):WaitForChild("Re_TakeDamage"):FireServer(unpack({npc,2}))
+                game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Fight"):WaitForChild("Re_TakeDamage"):FireServer(unpack({npc,3}))
+                task.wait()
+            end
+            repeatCount = repeatCount - 1
+        until not _G.auto2 or repeatCount <= 0
+    end
+end
+function hatcheggs(var)
+    local eggshop = "Draw"
+    eggshop = eggshop .. var
+    while _G.auto3 do
+        game:GetService("ReplicatedStorage"):WaitForChild("Events"):WaitForChild("Pets"):WaitForChild("Re_Hatch"):FireServer(unpack({"Hatch",eggshop,{}}))
+        task.wait()
+    end
+end
+
+
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/miroeramaa/TurtleLib/main/TurtleUiLib.lua"))()
+local window = library:Window("Window")
+--local window = library:Window("other window")
+--window.Parent.Position = UDim2.new(0, 500, 0, 500)
+--UiWindow.Position = UDim2.new(0, 500, 0, 500)
+-- Name of button, callback500
+
+window:Toggle("train", false, function(bool)
+    _G.auto1 = bool
+    task_defer(autoTrain())
+end)
+window:Toggle("fight", false, function(bool)
+    _G.auto2 = bool
+    task_defer(autoFight())
+end)
+
+window:Toggle("eggs", false, function(bool)
+    _G.auto3 = bool
+    task_defer(hatcheggs(eggnumber))
+end)
+ -- Name, table with names of the button that you want, callback that will be called with the name of the button that was pressed
+ 
+ local dropdown = window:Dropdown("Egg Number", {"001", "002", "003", "004"}, function(name)
+    eggnumber = name
+ end)
+ 
+ -- Name
+ 
+ dropdown:Button("New button")
+library:Keybind("P")
