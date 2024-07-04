@@ -1,0 +1,128 @@
+_G.auto1 = false
+_G.auto2 = false
+_G.auto3 = false
+_G.auto4 = false
+_G.auto5 = false
+local player = game.Players.LocalPlayer
+local gamerwaitservices = game:GetService("ReplicatedStorage"):WaitForChild("Knit"):WaitForChild("Services")
+local clickremote = gamerwaitservices:WaitForChild("ClickService"):WaitForChild("RE"):WaitForChild("ClickRemote")
+local task_defer = task.defer
+function autopower()
+    while _G.auto1 do
+        clickremote:FireServer("Click")
+        task.wait()
+    end
+end
+function autoegg()
+    while _G.auto2 do
+        game:GetService("ReplicatedStorage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("EggService"):WaitForChild("RF"):WaitForChild("OpenEgg"):InvokeServer(({["UpdateType"] = "Open", ["EggType"] = "LavaEgg", ["Auto"] = true, ["Amount"] = 1}))
+        game:GetService("ReplicatedStorage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("EggService"):WaitForChild("RF"):WaitForChild("OpenEgg"):InvokeServer(({["UpdateType"] = "Open", ["EggType"] = "LavaEgg", ["Auto"] = true, ["Amount"] = 4}))
+    end
+end
+
+function claimGifts()
+    while _G.auto3 do
+        for i = 1, 9 do
+            local args = {
+                [1] = {
+                    ["Id"] = tostring(i)
+                }
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("RewardService"):WaitForChild("RF"):WaitForChild("RequestCompletion"):InvokeServer(unpack(args))
+            task.wait()
+        end
+        wait(1)
+    end
+end
+
+
+function destroymobs()
+    local args = {
+        [1] = {
+            ["ZoneId"] = "Zone20",
+            ["WorldId"] = "World5"
+        }
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("TeleportService"):WaitForChild("RF"):WaitForChild("RequestTeleport"):InvokeServer(unpack(args))
+    while _G.auto4 do
+        for i = 30, 0, -1 do
+            local args = {
+                [1] = "BasicClick",
+                [2] = {
+                    ["NPCModel"] = workspace:WaitForChild("Enemies"):WaitForChild(tostring(i)) --del 0 al 8
+                }
+            }
+            game:GetService("ReplicatedStorage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("ClickService"):WaitForChild("RE"):WaitForChild("ClickRemote"):FireServer(unpack(args))
+            task.wait()
+        end
+    end
+end
+function grabcurrency()
+    while _G.auto5 do
+        for _, v in pairs(game:GetService("Workspace").DropModels:GetChildren()) do
+            if v.Parent and v.Drop then
+                if v.Name == "SoulsDrop" then
+                    local count = 1
+                    repeat
+                        game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(v.Drop.Position))
+                        count = count + 1
+                    until count > 3 or not v.Drop
+                end
+            end
+        end
+        task.wait()
+    end
+end
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/bledziio/Discussion/master/turtlegui"))()
+local window = library:Window("Main")
+local window2 = library:Window("Extra")
+
+
+window:Toggle("Power UP", false, function(bool)
+    _G.auto1 = bool
+    task_defer(autopower())
+end)
+window:Toggle("Volcano Eggs", false, function(bool)
+    _G.auto2 = bool
+    task_defer(autoegg())
+end)
+window:Toggle("Kill Mobs", false, function(bool)
+    _G.auto4 = bool
+    task_defer(destroymobs())
+end)
+window:Toggle("Farm Souls", false, function(bool)
+    _G.auto5 = bool
+    task_defer(grabcurrency())
+end)
+
+
+window2:Button("Trial shop", function()
+    game.Players.LocalPlayer.Character:SetPrimaryPartCFrame(CFrame.new(game:GetService("Workspace").TrialShopZones.Part.Position)+Vector3.new(0, 0, -22))
+end)
+window2:Button("Medium Trial", function()
+    local args = {
+        [1] = {
+            ["WorldId"] = "MediumTrial"
+        }
+    }
+    game:GetService("ReplicatedStorage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("TeleportService"):WaitForChild("RF"):WaitForChild("RequestTeleport"):InvokeServer(unpack(args))
+end)
+window2:Toggle("Claim Gifts", false, function(bool)
+    _G.auto3 = bool
+    task_defer(claimGifts())
+end)
+-- Name of the toggle, default state of the toggle, callback
+
+-- Name of slider, minimum value, maximum value, default value, callback
+library:Keybind("P")
+
+
+
+wait(2)
+_G.auto1 = true
+task_defer(autopower())
+_G.auto2 = true
+task_defer(autoegg())
+_G.auto3 = true
+task_defer(claimGifts())
+ 
