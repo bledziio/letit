@@ -81,11 +81,11 @@ local window2 = library:Window("Extra")
 --UiWindow.Position = UDim2.new(0, 500, 0, 500)
 -- Name of button, callback500
 
-window:Toggle("Power UP", false, function(bool)
+window:Toggle("Power UP", true, function(bool)
     _G.auto1 = bool
     task_defer(autopower())
 end)
-window:Toggle("Volcano Eggs", false, function(bool)
+window:Toggle("Volcano Eggs", true, function(bool)
     _G.auto2 = bool
     task_defer(autoegg())
 end)
@@ -110,7 +110,7 @@ window2:Button("Medium Trial", function()
     }
     game:GetService("ReplicatedStorage"):WaitForChild("Knit"):WaitForChild("Services"):WaitForChild("TeleportService"):WaitForChild("RF"):WaitForChild("RequestTeleport"):InvokeServer(unpack(args))
 end)
-window2:Toggle("Claim Gifts", false, function(bool)
+window2:Toggle("Claim Gifts", true, function(bool)
     _G.auto3 = bool
     task_defer(claimGifts())
 end)
