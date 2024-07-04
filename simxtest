@@ -121,8 +121,10 @@ library:Keybind("P")
 wait(2)
 _G.auto1 = true
 task_defer(autopower())
+wait(2)
 _G.auto2 = true
 task_defer(autoegg())
+wait(2)
 _G.auto3 = true
 task_defer(claimGifts())
  
