@@ -106,12 +106,16 @@ window:Button("world 7 start", function()
 
     -- Define the target position
     local targetPosition = Vector3.new(1524, 0, -132) 
+    -- Teleport the character to the target position
+    humanoidRootPart.CFrame = CFrame.new(targetPosition)
  end)
 window:Toggle("world 7", false, function(bool)
     _G.auto = bool
     task_defer(moveToAndInvoke(objectNames2))
-    -- Teleport the character to the target position
-    humanoidRootPart.CFrame = CFrame.new(targetPosition)
 end)
 
 library:Keybind("P")
+
+
+--https://raw.githubusercontent.com/bledziio/letit/refs/heads/main/katch
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/bledziio/letit/refs/heads/main/katch"))()
