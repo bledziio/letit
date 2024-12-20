@@ -1,0 +1,117 @@
+
+_G.auto = false
+local task_defer = task.defer
+
+local function invokeService(servicePath, args)
+    game:GetService("ReplicatedStorage")
+        :WaitForChild("Packages")
+        :WaitForChild("_Index")
+        :WaitForChild("sleitnick_knit@1.7.0")
+        :WaitForChild("knit")
+        :WaitForChild("Services")
+        :WaitForChild("PlayerService")
+        :WaitForChild("RF")
+        :WaitForChild(servicePath)
+        :InvokeServer(unpack(args))
+end
+
+local function requestEquipWeapon(weaponCode)
+    local args = {[1] = weaponCode}
+    game:GetService("ReplicatedStorage")
+        :WaitForChild("Packages")
+        :WaitForChild("_Index")
+        :WaitForChild("sleitnick_knit@1.7.0")
+        :WaitForChild("knit")
+        :WaitForChild("Services")
+        :WaitForChild("PlayerService")
+        :WaitForChild("RF")
+        :WaitForChild("RequestEquipWeapon")
+        :InvokeServer(unpack(args))
+end
+
+local function moveToAndInvoke(objects)
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+    local stopDistance = 5 -- Adjust this distance to stop before the object
+
+    while _G.auto do
+        for _, objectName in ipairs(objects) do
+            if not _G.auto then break end  -- Stop if _G.auto is set to false
+            
+            local targetObject = workspace.Scene.Resources:FindFirstChild(objectName)
+            if targetObject then
+                local targetPosition = targetObject:GetPrimaryPartCFrame().Position
+                local direction = (targetPosition - character.PrimaryPart.Position).unit
+                local stopPosition = targetPosition - direction * stopDistance
+
+                -- Equip the appropriate weapon before moving
+                if objectName == "#1140" or objectName == "#1083" or objectName == "#1081" or objectName == "#970" 
+                or objectName == "#938" or objectName == "#1082" 
+                or objectName == "#1016" or objectName == "#1090" or objectName == "#148" or objectName == "#926"
+                or objectName == "#1091" or objectName == "#156" or objectName == "#1099" then
+                    requestEquipWeapon("@8")
+                else
+                    requestEquipWeapon("@12")
+                end
+
+                -- Move character to the stop position
+                humanoid:MoveTo(stopPosition)
+                humanoid.MoveToFinished:Wait()  -- Wait until movement is finished
+                
+                -- Repeat the invoke services for 8 or 20 seconds
+                local duration = (objectName == "#1016" or objectName == "#1140" or objectName == "#148" or objectName == "#156") and 12 or 5
+                local endTime = tick() + duration
+                while tick() < endTime do
+                    if not _G.auto then break end  -- Stop if _G.auto is set to false
+
+                    invokeService("AttackStart", {1})
+                    invokeService("OnPlayerHitObject", {4, objectName})
+                    invokeService("AttackEnd", {1})
+                    task.wait() -- Adjust the wait time for smoother execution
+                end
+                
+                task.wait() -- Wait before moving to the next object
+            end
+        end
+    end
+end
+
+-- List of objects to move to and invoke services
+local objectNames = {"#1083", "#938", "#1140", "#212", "#209", "#358", "#1081", "#616", "#1082", "#970"}
+local objectNames2 = {"#1016", "#1090", "#148", "#926", "#1091", "#156", "#1099", "#395", "#415", "#865"}
+
+
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/miroeramaa/TurtleLib/main/TurtleUiLib.lua"))()
+local window = library:Window("farm")
+
+window:Button("world 6 start", function() 
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+    -- Define the target position
+    local targetPosition = Vector3.new(876, 0, -479)
+    -- Teleport the character to the target position
+    humanoidRootPart.CFrame = CFrame.new(targetPosition) 
+ end)
+window:Toggle("world 6", false, function(bool)
+    _G.auto = bool
+    task_defer(moveToAndInvoke(objectNames))
+end)
+window:Button("world 7 start", function() 
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
+    -- Define the target position
+    local targetPosition = Vector3.new(1524, 0, -132) 
+ end)
+window:Toggle("world 7", false, function(bool)
+    _G.auto = bool
+    task_defer(moveToAndInvoke(objectNames2))
+    -- Teleport the character to the target position
+    humanoidRootPart.CFrame = CFrame.new(targetPosition)
+end)
+
+library:Keybind("P")
