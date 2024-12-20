@@ -127,7 +127,7 @@ window:Button("world 4 start", function()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
 
     -- Define the target position
-    local targetPosition = Vector3.new(1524, 0, -138) 
+    local targetPosition = Vector3.new(788, 0, -2009) 
     -- Teleport the character to the target position
     humanoidRootPart.CFrame = CFrame.new(targetPosition)
 end)
