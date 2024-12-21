@@ -2,6 +2,8 @@
 _G.auto = false
 _G.auto2 = false
 local task_defer = task.defer
+local pokemon = "Shadowpaw"
+
 
 local function invokeService(servicePath, args)
     game:GetService("ReplicatedStorage")
@@ -140,7 +142,7 @@ local function checkForMoolet()
                 and creature.RootPart.TitanNameplate.InfoFrame:FindFirstChild("PlayerName")
                 and creature.RootPart.TitanNameplate.InfoFrame.PlayerName.Text
 
-            if playerNameText and playerNameText:find("Moolet") then
+            if playerNameText and playerNameText:find(pokemon) then
                 -- Calculate the position to stop before the object
                 local targetPosition = creature:GetPrimaryPartCFrame().Position
                 local direction = (targetPosition - humanoidRootPart.Position).unit
