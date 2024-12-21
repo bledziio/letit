@@ -96,7 +96,7 @@ local objectNames3 = {"#996", "#988", "#1065", "#995" , "#1062", "#1063", "#1064
 local function tameCreature(creatureName)
     local argsStart = {
         [1] = creatureName,
-        [2] = "#1"
+        [2] = "#2"
     }
     game:GetService("ReplicatedStorage")
         :WaitForChild("Packages")
