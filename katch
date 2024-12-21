@@ -6,6 +6,10 @@ local fallbackPokemon = "Shadowclaw"
 local maxCheckAttempts = 5
 local maxFallbackAttempts = 3
 
+local objectNames = {"#1083", "#938", "#1140", "#212", "#209", "#358", "#1081", "#616", "#1082", "#970"}
+local objectNames2 = {"#1016", "#1090", "#148", "#926", "#1091", "#156", "#1099", "#395", "#415", "#865"}
+local objectNames3 = {"#996", "#988", "#1065", "#995", "#1062", "#1063", "#1064", "#1066"}
+
 local function invokeService(servicePath, args)
     game:GetService("ReplicatedStorage")
         :WaitForChild("Packages")
@@ -147,7 +151,7 @@ end
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/miroeramaa/TurtleLib/main/TurtleUiLib.lua"))()
 local window = library:Window("farm")
 
-window:Toggle("find Moolet", false, function(bool)
+window:Toggle("find Poke", false, function(bool)
     _G.auto2 = bool
     if _G.auto2 then
         task_defer(checkForMoolet)
