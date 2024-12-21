@@ -6,7 +6,6 @@ local fallbackPokemon = "Shadowclaw"
 local maxCheckAttempts = 5
 local maxFallbackAttempts = 3
 
----
 local function invokeService(servicePath, args)
     game:GetService("ReplicatedStorage")
         :WaitForChild("Packages")
@@ -21,17 +20,7 @@ local function invokeService(servicePath, args)
 end
 
 local function requestEquipWeapon(weaponCode)
-    local args = {[1] = weaponCode}
-    game:GetService("ReplicatedStorage")
-        :WaitForChild("Packages")
-        :WaitForChild("_Index")
-        :WaitForChild("sleitnick_knit@1.7.0")
-        :WaitForChild("knit")
-        :WaitForChild("Services")
-        :WaitForChild("PlayerService")
-        :WaitForChild("RF")
-        :WaitForChild("RequestEquipWeapon")
-        :InvokeServer(unpack(args))
+    invokeService("RequestEquipWeapon", {weaponCode})
 end
 
 local function moveToAndInvoke(objects)
@@ -51,25 +40,26 @@ local function moveToAndInvoke(objects)
                 local stopPosition = targetPosition - direction * stopDistance
 
                 -- Equip the appropriate weapon before moving
-                if objectName == "#1140" or objectName == "#1083" or objectName == "#1081" or objectName == "#970" 
-                or objectName == "#938" or objectName == "#1082" 
-                or objectName == "#1016" or objectName == "#1090" or objectName == "#148" or objectName == "#926"
-                or objectName == "#1091" or objectName == "#156" or objectName == "#1099"
-                or objectName == "#996" or objectName == "#995" or objectName == "#1065" or objectName == "#1062"
-                or objectName == "#1063" or objectName == "#1064" or objectName == "#1066" or objectName == "#988" then
-                    requestEquipWeapon("@8")
-                else
-                    requestEquipWeapon("@12")
-                end
+                local weaponCodes = {
+                    ["#1140"] = "@8", ["#1083"] = "@8", ["#1081"] = "@8", ["#970"] = "@8",
+                    ["#938"] = "@8", ["#1082"] = "@8", ["#1016"] = "@8", ["#1090"] = "@8",
+                    ["#148"] = "@8", ["#926"] = "@8", ["#1091"] = "@8", ["#156"] = "@8",
+                    ["#1099"] = "@8", ["#996"] = "@8", ["#995"] = "@8", ["#1065"] = "@8",
+                    ["#1062"] = "@8", ["#1063"] = "@8", ["#1064"] = "@8", ["#1066"] = "@8",
+                    ["#988"] = "@8"
+                }
+                requestEquipWeapon(weaponCodes[objectName] or "@12")
 
                 -- Move character to the stop position
                 humanoid:MoveTo(stopPosition)
                 humanoid.MoveToFinished:Wait()  -- Wait until movement is finished
                 
-                -- Repeat the invoke services for 8 or 20 seconds
-                local duration = 
-                (objectName == "#1140" or objectName == "#148" or objectName == "#156") and 12 or 
-                (objectName == "#996" or objectName == "#995" or objectName == "#1016") and 9 or 5
+                -- Repeat the invoke services for a specified duration
+                local durations = {
+                    ["#1140"] = 12, ["#148"] = 12, ["#156"] = 12,
+                    ["#996"] = 9, ["#995"] = 9, ["#1016"] = 9
+                }
+                local duration = durations[objectName] or 5
                 local endTime = tick() + duration
 
                 while tick() < endTime do
@@ -85,97 +75,6 @@ local function moveToAndInvoke(objects)
             end
         end
     end
-end
-
--- List of objects to move to and invoke services
-local objectNames = {"#1083", "#938", "#1140", "#212", "#209", "#358", "#1081", "#616", "#1082", "#970"}
-local objectNames2 = {"#1016", "#1090", "#148", "#926", "#1091", "#156", "#1099", "#395", "#415", "#865"}
-local objectNames3 = {"#996", "#988", "#1065", "#995" , "#1062", "#1063", "#1064", "#1066"}
-
-
-
----
-
-local function invokeService(servicePath, args)
-    game:GetService("ReplicatedStorage")
-        :WaitForChild("Packages")
-        :WaitForChild("_Index")
-        :WaitForChild("sleitnick_knit@1.7.0")
-        :WaitForChild("knit")
-        :WaitForChild("Services")
-        :WaitForChild("PlayerService")
-        :WaitForChild("RF")
-        :WaitForChild(servicePath)
-        :InvokeServer(unpack(args))
-end
-
-local function tameCreature(creatureName)
-    local argsStart = {
-        [1] = creatureName,
-        [2] = "#2"
-    }
-    game:GetService("ReplicatedStorage")
-        :WaitForChild("Packages")
-        :WaitForChild("_Index")
-        :WaitForChild("sleitnick_knit@1.7.0")
-        :WaitForChild("knit")
-        :WaitForChild("Services")
-        :WaitForChild("PlayerService")
-        :WaitForChild("RF")
-        :WaitForChild("RequestStartTameCreature")
-        :InvokeServer(unpack(argsStart))
-
-    local argsEnd = {
-        [1] = creatureName
-    }
-    game:GetService("ReplicatedStorage")
-        :WaitForChild("Packages")
-        :WaitForChild("_Index")
-        :WaitForChild("sleitnick_knit@1.7.0")
-        :WaitForChild("knit")
-        :WaitForChild("Services")
-        :WaitForChild("PlayerService")
-        :WaitForChild("RF")
-        :WaitForChild("RequestEndTameCreature")
-        :InvokeServer(unpack(argsEnd))
-end
-
-local function attackShadowclaw(creatureName)
-    local argsStart = { [1] = 1 }
-    game:GetService("ReplicatedStorage")
-        :WaitForChild("Packages")
-        :WaitForChild("_Index")
-        :WaitForChild("sleitnick_knit@1.7.0")
-        :WaitForChild("knit")
-        :WaitForChild("Services")
-        :WaitForChild("PlayerService")
-        :WaitForChild("RF")
-        :WaitForChild("AttackStart")
-        :InvokeServer(unpack(argsStart))
-
-    local argsHit = { [1] = 2, [2] = creatureName }
-    game:GetService("ReplicatedStorage")
-        :WaitForChild("Packages")
-        :WaitForChild("_Index")
-        :WaitForChild("sleitnick_knit@1.7.0")
-        :WaitForChild("knit")
-        :WaitForChild("Services")
-        :WaitForChild("PlayerService")
-        :WaitForChild("RF")
-        :WaitForChild("OnPlayerHitObject")
-        :InvokeServer(unpack(argsHit))
-
-    local argsEnd = { [1] = 1 }
-    game:GetService("ReplicatedStorage")
-        :WaitForChild("Packages")
-        :WaitForChild("_Index")
-        :WaitForChild("sleitnick_knit@1.7.0")
-        :WaitForChild("knit")
-        :WaitForChild("Services")
-        :WaitForChild("PlayerService")
-        :WaitForChild("RF")
-        :WaitForChild("AttackEnd")
-        :InvokeServer(unpack(argsEnd))
 end
 
 local function checkForMoolet()
