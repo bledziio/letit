@@ -2,13 +2,13 @@ _G.autoQuest = false
 local task_defer = task.defer
 
 local questPokemonList = {
-    {"Bouldrunt", "Bouldram"},
-    {"Voidpup", "Voidstalker"},
-    {"Frostkit", "Frostfang"},
-    {"Wuarrykit", "Quarryclaw"},
-    {"Driplet", "Hydromusk"},
-    {"Terrazee", "Terrakong"},
-    {"Gemara"}
+    {name = "Bouldrunt", fallback = "Bouldram", coords = Vector3.new(1972, 0, -1116)},
+    {name = "Voidpup", fallback = "Voidstalker", coords = Vector3.new(1571.59716796875, 0, -1052.0155029296875)},
+    {name = "Frostkit", fallback = "Frostfang", coords = Vector3.new(1932, 0, -1276)},
+    {name = "Quarrykit", fallback = "Quarryclaw", coords = Vector3.new(2004, 0, -823.270263671875)},
+    {name = "Driplet", fallback = "Hydromusk", coords = Vector3.new(1668, 0, -1268)},
+    {name = "Terrazee", fallback = "Terrakong", coords = Vector3.new(1668, 0, -1268)},
+    {name = "Gemara", fallback = nil, coords = Vector3.new(1796, 0, -1060)}
 }
 
 local function invokeService(servicePath, args)
@@ -47,9 +47,13 @@ local function tameCreature(creatureName)
     print("Requested End Tame Creature")
 end
 
-local function moveToPosition(humanoid, targetPosition)
+local function moveToPosition(humanoid, targetPosition, stopDistance)
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+
     humanoid:MoveTo(targetPosition)
-    print("MoveTo command issued")
+    print("MoveTo command issued to position: " .. tostring(targetPosition))
     local moveStartTime = tick()
     local reached = false
 
@@ -66,11 +70,24 @@ local function moveToPosition(humanoid, targetPosition)
         if reached then
             break
         end
+        -- Check if character is stuck and needs to be redirected or teleported
+        local currentDistance = (humanoidRootPart.Position - targetPosition).magnitude
+        if currentDistance > stopDistance then
+            humanoid:MoveTo(targetPosition)
+            print("Reissuing MoveTo command")
+        end
         task.wait(0.5)
     end
 
+    -- Teleport if the character is ultra stuck
+    if not reached then
+        humanoidRootPart.CFrame = CFrame.new(targetPosition)
+        print("Teleported to target position")
+        reached = true
+    end
+
     return reached
-end
+}
 
 local function checkQuestAndCapture()
     print("Starting checkQuestAndCapture")
@@ -79,7 +96,7 @@ local function checkQuestAndCapture()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
     local humanoid = character:WaitForChild("Humanoid")
     local stopDistance = 5 -- Adjust this distance to stop before the object
-
+    
     -- Player position at world 8 center
     humanoidRootPart.CFrame = CFrame.new(1853.481689453125, 0.6721579432487488, -1133.0943603515625)
     print("Teleported to world 8 center")
@@ -91,74 +108,73 @@ local function checkQuestAndCapture()
         print("Quest Text: " .. questText)
         local targetPokemon = nil
         local fallbackPokemon = nil
+        local targetCoords = nil
 
         -- Find target and fallback Pokémon from the quest text
         for _, group in ipairs(questPokemonList) do
-            if questText:find(group[1]) then
-                targetPokemon = group[1]
-                fallbackPokemon = group[2] or group[1]
-                print("Target Pokemon: " .. targetPokemon .. " | Fallback Pokemon: " .. fallbackPokemon)
+            if questText:find(group.name) then
+                targetPokemon = group.name
+                fallbackPokemon = group.fallback
+                targetCoords = group.coords
+                print("Target Pokemon: " .. targetPokemon .. " | Fallback Pokemon: " .. fallbackPokemon .. " | Coords: " .. tostring(targetCoords))
                 break
             end
         end
 
-        if targetPokemon then
-            local foundCreature = false
-            local attempts = 0
+        if targetPokemon and targetCoords then
+            -- Move to the target coordinates
+            if moveToPosition(humanoid, targetCoords, stopDistance) then
+                local foundCreature = false
+                local attempts = 0
 
-            while not foundCreature and attempts < 10 do
-                print("Search attempt: " .. attempts)
-                attempts = attempts + 1
+                while not foundCreature and attempts < 10 do
+                    print("Search attempt: " .. attempts)
+                    attempts = attempts + 1
 
-                local allCreatures = workspace.Creatures:GetChildren() -- Refresh list of creatures
+                    local allCreatures = workspace.Creatures:GetChildren() -- Refresh list of creatures
 
-                for _, creature in ipairs(allCreatures) do
-                    local playerNameText = creature:FindFirstChild("RootPart")
-                        and creature.RootPart:FindFirstChild("TitanNameplate")
-                        and creature.RootPart.TitanNameplate:FindFirstChild("InfoFrame")
-                        and creature.RootPart.TitanNameplate.InfoFrame:FindFirstChild("PlayerName")
-                        and creature.RootPart.TitanNameplate.InfoFrame.PlayerName.Text
+                    for _, creature in ipairs(allCreatures) do
+                        local playerNameText = creature:FindFirstChild("RootPart")
+                            and creature.RootPart:FindFirstChild("TitanNameplate")
+                            and creature.RootPart.TitanNameplate:FindFirstChild("InfoFrame")
+                            and creature.RootPart.TitanNameplate.InfoFrame:FindFirstChild("PlayerName")
+                            and creature.RootPart.TitanNameplate.InfoFrame.PlayerName.Text
 
-                    print("Checking creature: " .. creature.Name .. " | Player Name: " .. (playerNameText or "nil"))
+                        print("Checking creature: " .. creature.Name .. " | Player Name: " .. (playerNameText or "nil"))
 
-                    if playerNameText and playerNameText:find(targetPokemon) then
-                        print("Found target Pokemon: " .. creature.Name)
-                        -- Calculate the position to stop before the object
-                        local targetPosition = creature:GetPrimaryPartCFrame().Position
-                        local direction = (targetPosition - humanoidRootPart.Position).unit
-                        local stopPosition = targetPosition - direction * stopDistance
+                        if playerNameText and playerNameText:find(targetPokemon) then
+                            print("Found target Pokemon: " .. creature.Name)
+                            -- Calculate the position to stop before the object
+                            local targetPosition = creature:GetPrimaryPartCFrame().Position
+                            local direction = (targetPosition - humanoidRootPart.Position).unit
+                            local stopPosition = targetPosition - direction * stopDistance
 
-                        print("Target Position: " .. tostring(targetPosition) .. " | Stop Position: " .. tostring(stopPosition))
+                            print("Target Position: " .. tostring(targetPosition) .. " | Stop Position: " .. tostring(stopPosition))
 
-                        -- Move character to the stop position facing the object
-                        if moveToPosition(humanoid, stopPosition) then
-                            -- Execute the taming code
-                            tameCreature(creature.Name)
-                            print("Tamed target Pokemon")
-                            foundCreature = true
+                            -- Move character to the stop position facing the object
+                            if moveToPosition(humanoid, stopPosition, stopDistance) then
+                                -- Execute the taming code
+                                tameCreature(creature.Name)
+                                print("Tamed target Pokemon")
+                                foundCreature = true
 
-                            -- Check if quest is completed
-                            local captures = game:GetService("Players").LocalPlayer.leaderstats.Captures.Value
-                            print("Current Captures: " .. captures)
+                                -- Check if quest is completed
+                                local captures = game:GetService("Players").LocalPlayer.leaderstats.Captures.Value
+                                print("Current Captures: " .. captures)
 
-                            -- Request release of the captured creature
-                            local releaseArgs = { [1] = "@" .. tostring(captures) }
-                            invokeCreatureService("RequestReleasePet", releaseArgs)
-                            print("Released Pokemon with capture value: " .. tostring(captures))
+                                -- Request release of the captured creature
+                                local releaseArgs = { [1] = "@" .. tostring(captures) }
+                                invokeCreatureService("RequestReleasePet", releaseArgs)
+                                print("Released Pokemon with capture value: " .. tostring(captures))
 
-                            break
+                                break
+                            end
                         end
                     end
-                end
 
-                if not foundCreature and attempts == 5 then
-                    -- Move closer to the target area and retry
-                    local closerPosition = humanoidRootPart.Position + Vector3.new(50, 0, 50)
-                    if moveToPosition(humanoid, closerPosition) then
-                        print("Moved closer to the target area, retrying search")
-                        attempts = 0
-                    else
-                        print("Failed to move closer to the target area")
+                    if not foundCreature and attempts == 5 then
+                        print("Failed to find target Pokemon after 5 attempts")
+                        break
                     end
                 end
             end
@@ -183,7 +199,7 @@ end
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/miroeramaa/TurtleLib/main/TurtleUiLib.lua"))()
 local window = library:Window("quest")
 
-window:Toggle("quest ", false, function(bool)
+window:Toggle("quest capture", false, function(bool)
     _G.autoQuest = bool
     if _G.autoQuest then
         task_defer(checkQuestAndCapture)
