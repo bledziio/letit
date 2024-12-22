@@ -25,8 +25,11 @@ local function invokeService(servicePath, args)
 end
 
 local function tameCreature(creatureName)
+    print("Starting tameCreature for: " .. creatureName)
     invokeService("RequestStartTameCreature", {creatureName, "#2"})
+    print("Requested Start Tame Creature")
     invokeService("RequestEndTameCreature", {creatureName})
+    print("Requested End Tame Creature")
 end
 
 local function checkQuestAndCapture()
@@ -93,6 +96,7 @@ local function checkQuestAndCapture()
 
                         -- Check if quest is completed
                         local captures = game:GetService("Players").LocalPlayer.leaderstats.Captures.Value
+                        print("Current Captures: " .. captures)
 
                         -- Request release of the captured creature
                         local releaseArgs = { [1] = "@" .. tostring(captures) }
