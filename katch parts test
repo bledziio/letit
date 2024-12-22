@@ -77,7 +77,7 @@ local function checkQuestAndCapture()
                         and creature.RootPart.TitanNameplate.InfoFrame.PlayerName.Text
 
                     if playerNameText and playerNameText:find(targetPokemon) then
-                        print("Found target Pokemon: " .. creature.Name)
+                        print("Found target Pooooookemon: " .. creature.Name)
                         -- Calculate the position to stop before the object
                         local targetPosition = creature:GetPrimaryPartCFrame().Position
                         local direction = (targetPosition - humanoidRootPart.Position).unit
