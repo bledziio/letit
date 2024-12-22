@@ -204,19 +204,27 @@ local window = library:Window("quest")
 
 -- Ball selection options
 local ballOptions = {"#1", "#2", "#3"}
-local ballDropdown = window:Dropdown("Selectodono Ball", ballOptions, function(selected)
+local ballDropdown = window:Dropdown("Select Ball", ballOptions, function(selected)
     _G.selectedBall = selected
     print("Selected Ball: " .. selected)
 end)
 ballDropdown:SetValue("#2")
 
+-- Explicitly add a new section for the toggle
+window:Section("Quest Capture")
+
 -- Quest capture toggle
-window:Toggle("quest capture", false, function(bool)
+local questToggle = window:Toggle("Quest Capture", false, function(bool)
     _G.autoQuest = bool
     if _G.autoQuest then
         task_defer(checkQuestAndCapture)
     end
 end)
+
+library:Keybind("P")
+
+print("Setup complete")
+
 
 library:Keybind("P")
 
