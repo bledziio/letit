@@ -1,4 +1,4 @@
-G.autoQuest = false
+_G.autoQuest = false
 local task_defer = task.defer
 
 local questPokemonList = {
