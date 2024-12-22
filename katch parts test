@@ -1,6 +1,7 @@
 _G.autoQuest = false
 local task_defer = task.defer
 
+
 local questPokemonList = {
     {name = "Bouldrunt", fallback = "Bouldram", coords = Vector3.new(1972, 0, -1116)},
     {name = "Voidpup", fallback = "Voidstalker", coords = Vector3.new(1571.59716796875, 0, -1052.0155029296875)},
