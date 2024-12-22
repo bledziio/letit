@@ -210,6 +210,7 @@ local ballDropdown = window:Dropdown("Select Ball", ballOptions, function(select
 end)
 ballDropdown:SetValue("#2")
 
+-- Quest capture toggle
 window:Toggle("quest capture", false, function(bool)
     _G.autoQuest = bool
     if _G.autoQuest then
