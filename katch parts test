@@ -204,7 +204,7 @@ local window = library:Window("quest")
 
 -- Ball selection options
 local ballOptions = {"#1", "#2", "#3"}
-local ballDropdown = window:Dropdown("Select Ball", ballOptions, function(selected)
+local ballDropdown = window:Dropdown("Select Ballon", ballOptions, function(selected)
     _G.selectedBall = selected
     print("Selected Ball: " .. selected)
 end)
@@ -220,11 +220,6 @@ local questToggle = window:Toggle("Quest Capture", false, function(bool)
         task_defer(checkQuestAndCapture)
     end
 end)
-
-library:Keybind("P")
-
-print("Setup complete")
-
 
 library:Keybind("P")
 
