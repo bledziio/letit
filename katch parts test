@@ -208,7 +208,7 @@ local ballDropdown = window:Dropdown("Select Ballon", ballOptions, function(sele
     _G.selectedBall = selected
     print("Selected Ball: " .. selected)
 end)
-ballDropdown:SetValue("#2")
+
 
 -- Explicitly add a new section for the toggle
 window:Section("Quest Capture")
@@ -222,5 +222,5 @@ local questToggle = window:Toggle("Quest Capture", false, function(bool)
 end)
 
 library:Keybind("P")
-
+ballDropdown:SetValue("#2")
 print("Setup complete")
