@@ -2,6 +2,28 @@ _G.autoQuest = false
 _G.selectedBall = "#2"
 _G.selectedWorld = "world8" -- Default world
 _G.partnerCreature = "@424" -- Global variable for partner creature
+-- Define Pokémon lists for different worlds
+local pokemonLists = {
+    world8 = {
+        {name = "Bouldrunt", fallback = "Bouldram", coords = Vector3.new(1972, 0, -1116)},
+        {name = "Voidpup", fallback = "Voidstalker", coords = Vector3.new(1571.59716796875, 0, -1052.0155029296875)},
+        {name = "Frostkit", fallback = "Frostfang", coords = Vector3.new(1932, 0, -1276)},
+        {name = "Quarrykit", fallback = "Quarryclaw", coords = Vector3.new(2004, 0, -823.270263671875)},
+        {name = "Driplet", fallback = "Hydromusk", coords = Vector3.new(1668, 0, -1268)},
+        {name = "Terrazee", fallback = "Terrakong", coords = Vector3.new(1668, 0, -1268)},
+        {name = "Gemara", fallback = nil, coords = Vector3.new(1796, 0, -1060)}
+    },
+    world9 = {
+        {name = "Lavasnip", fallback = "Lavafang", coords = Vector3.new(2000, 0, -1500)},
+        {name = "Abysspup", fallback = "Abyssstalker", coords = Vector3.new(1600, 0, -1300)},
+        -- Add more entries for World 9 as needed
+    },
+    world10 = {
+        {name = "Stormkit", fallback = "Stormfang", coords = Vector3.new(1800, 0, -1200)},
+        {name = "Cavernkit", fallback = "Cavernclaw", coords = Vector3.new(1900, 0, -1100)},
+        -- Add more entries for World 10 as needed
+    }
+}
 
 local task_defer = task.defer
 
@@ -295,7 +317,7 @@ Tab:AddToggle({
 
 -- Add a keybind to open/close the UI
 Tab:AddBind({
-    Name = "Toggle UI",
+    Name = "Toggleee UI",
     Default = Enum.KeyCode.P,
     Hold = false,
     Callback = function()
