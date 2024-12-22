@@ -159,12 +159,27 @@ local function checkQuestAndCapture()
     print("Teleported to world center: " .. tostring(centerPosition))
     task.wait(1) -- Wait for teleport to complete
     summonPartnerCreature()
-    setPlayerMoveSpeed(200)
+    setPlayerMoveSpeed(91)
 
     -- Flag to avoid repeated actions
     local respawnedFlag = false
 
-    -- Respawn handler
+    -- Function to handle player death and respawn
+    local function handleRespawn()
+        respawnedFlag = true
+        print("Player has died, waiting for respawn...")
+        character:WaitForChild("HumanoidRootPart").CFrame = CFrame.new(centerPosition)
+        print("Teleported back to world center after respawn")
+        task.wait(1) -- Wait for teleport to complete
+        summonPartnerCreature()
+        setPlayerMoveSpeed(91)
+        respawnedFlag = false
+    end
+
+    -- Connect to the Died event
+    humanoid.Died:Connect(handleRespawn)
+
+    -- Respawn handler to ensure actions after respawn
     local function onRespawned()
         if not respawnedFlag then
             respawnedFlag = true
@@ -173,13 +188,12 @@ local function checkQuestAndCapture()
             print("Teleported back to world center after respawn")
             task.wait(1) -- Wait for teleport to complete
             summonPartnerCreature()
-            setPlayerMoveSpeed(200)
+            setPlayerMoveSpeed(91)
             respawnedFlag = false
         end
     end
 
     player.CharacterAdded:Connect(onRespawned)
-
 
     while _G.autoQuest do
         print("AutoQuest is running")
@@ -318,7 +332,7 @@ Tab:AddDropdown({
 
 -- Quest capture toggle
 Tab:AddToggle({
-    Name = "333Quest Capture",
+    Name = "Qutttest Capture",
     Default = false,
     Callback = function(bool)
         _G.autoQuest = bool
