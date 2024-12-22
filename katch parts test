@@ -1,7 +1,6 @@
 _G.autoQuest = false
 local task_defer = task.defer
 
-
 local questPokemonList = {
     {name = "Bouldrunt", fallback = "Bouldram", coords = Vector3.new(1972, 0, -1116)},
     {name = "Voidpup", fallback = "Voidstalker", coords = Vector3.new(1571.59716796875, 0, -1052.0155029296875)},
@@ -128,7 +127,7 @@ local function checkQuestAndCapture()
                 local foundCreature = false
                 local attempts = 0
 
-                while not foundCreature and attempts < 10 do
+                while not foundCreature and attempts < 5 do
                     print("Search attempt: " .. attempts)
                     attempts = attempts + 1
 
@@ -174,8 +173,10 @@ local function checkQuestAndCapture()
                     end
 
                     if not foundCreature and attempts == 5 then
-                        print("Failed to find target Pokemon after 5 attempts")
-                        break
+                        -- Switch to fallback Pokémon if the target Pokémon is not found after 5 attempts
+                        targetPokemon = fallbackPokemon
+                        print("Switching to fallback Pokemon: " .. fallbackPokemon)
+                        attempts = 0 -- Reset attempts for the fallback Pokemon search
                     end
                 end
             end
@@ -200,7 +201,7 @@ end
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/miroeramaa/TurtleLib/main/TurtleUiLib.lua"))()
 local window = library:Window("quest")
 
-window:Toggle("qqqqqqqqqqqquest capture", false, function(bool)
+window:Toggle("2  capture", false, function(bool)
     _G.autoQuest = bool
     if _G.autoQuest then
         task_defer(checkQuestAndCapture)
