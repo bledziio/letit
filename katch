@@ -202,7 +202,7 @@ local function checkQuestAndCapture()
     local stopDistance = 5 -- Adjust this distance to stop before the object
     
     -- Player position at world 8 center
-    humanoidRootPart.CFrame = CFrame.new(89.12157440185547, 5.388832092285156, -64.87527465820312)
+    humanoidRootPart.CFrame = CFrame.new(1853.481689453125, 0.6721579432487488, -1133.0943603515625)
     task.wait(1) -- Wait for teleport to complete
 
     while _G.autoQuest do
