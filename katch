@@ -1,5 +1,7 @@
+
 _G.auto = false
 _G.auto2 = false
+_G.autoQuest = false
 local task_defer = task.defer
 local pokemon = "Shadowpaw"
 local fallbackPokemon = "Shadowclaw"
@@ -9,6 +11,15 @@ local maxFallbackAttempts = 3
 local objectNames = {"#1083", "#938", "#1140", "#212", "#209", "#358", "#1081", "#616", "#1082", "#970"}
 local objectNames2 = {"#1016", "#1090", "#148", "#926", "#1091", "#156", "#1099", "#395", "#415", "#865"}
 local objectNames3 = {"#996", "#988", "#1065", "#995", "#1062", "#1063", "#1064", "#1066"}
+local questPokemonList = {
+    {"Bouldrunt", "Bouldram"},
+    {"Voidpup", "Voidstalker"},
+    {"Frostkit", "Frostfang"},
+    {"Wuarrykit", "Quarryclaw"},
+    {"Driplet", "Hydromusk"},
+    {"Terrazee", "Terrakong"},
+    {"Gemara"}
+}
 
 local function invokeService(servicePath, args)
     game:GetService("ReplicatedStorage")
@@ -25,6 +36,20 @@ end
 
 local function requestEquipWeapon(weaponCode)
     invokeService("RequestEquipWeapon", {weaponCode})
+end
+
+local function tameCreature(creatureName)
+    invokeService("RequestStartTameCreature", {creatureName, "#2"})
+    invokeService("RequestEndTameCreature", {creatureName})
+end
+
+local function attackShadowclaw(creatureName)
+    while workspace.Creatures:FindFirstChild(creatureName) do
+        invokeService("AttackStart", {1})
+        invokeService("OnPlayerHitObject", {2, creatureName})
+        invokeService("AttackEnd", {1})
+        task.wait(0.5) -- Adjust the wait time for smoother execution
+    end
 end
 
 local function moveToAndInvoke(objects)
@@ -81,6 +106,22 @@ local function moveToAndInvoke(objects)
     end
 end
 
+local function findClosestCreature(creatures, position)
+    local closestCreature = nil
+    local closestDistance = math.huge
+    
+    for _, creature in ipairs(creatures) do
+        local creaturePosition = creature:GetPrimaryPartCFrame().Position
+        local distance = (creaturePosition - position).magnitude
+        if distance < closestDistance then
+            closestCreature = creature
+            closestDistance = distance
+        end
+    end
+    
+    return closestCreature
+end
+
 local function checkForMoolet()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
@@ -94,6 +135,7 @@ local function checkForMoolet()
     while _G.auto2 do
         local foundCreature = false
         local currentPokemon = usingFallback and fallbackPokemon or pokemon
+        local allCreatures = {}
         
         for _, creature in ipairs(workspace.Creatures:GetChildren()) do
             local playerNameText = creature:FindFirstChild("RootPart")
@@ -103,29 +145,34 @@ local function checkForMoolet()
                 and creature.RootPart.TitanNameplate.InfoFrame.PlayerName.Text
 
             if playerNameText and playerNameText:find(currentPokemon) then
-                -- Calculate the position to stop before the object
-                local targetPosition = creature:GetPrimaryPartCFrame().Position
-                local direction = (targetPosition - humanoidRootPart.Position).unit
-                local stopPosition = targetPosition - direction * stopDistance
-
-                -- Move character to the stop position facing the object
-                humanoid:MoveTo(stopPosition)
-                humanoid.MoveToFinished:Wait()  -- Wait until movement is finished
-
-                if currentPokemon == pokemon then
-                    -- Execute the taming code
-                    tameCreature(creature.Name)
-                else
-                    -- Execute the attack code for Shadowclaw
-                    attackShadowclaw(creature.Name)
-                end
-
-                task.wait(1)
-                foundCreature = true
-                checkAttempts = 0  -- Reset check attempts after a successful find
-                fallbackAttempts = 0  -- Reset fallback attempts after a successful find
-                break
+                table.insert(allCreatures, creature)
             end
+        end
+        
+        local targetCreature = findClosestCreature(allCreatures, humanoidRootPart.Position)
+        
+        if targetCreature then
+            -- Calculate the position to stop before the object
+            local targetPosition = targetCreature:GetPrimaryPartCFrame().Position
+            local direction = (targetPosition - humanoidRootPart.Position).unit
+            local stopPosition = targetPosition - direction * stopDistance
+
+            -- Move character to the stop position facing the object
+            humanoid:MoveTo(stopPosition)
+            humanoid.MoveToFinished:Wait()  -- Wait until movement is finished
+
+            if currentPokemon == pokemon then
+                -- Execute the taming code
+                tameCreature(targetCreature.Name)
+            else
+                -- Execute the attack code for Shadowclaw
+                attackShadowclaw(targetCreature.Name)
+            end
+
+            task.wait(1)
+            foundCreature = true
+            checkAttempts = 0  -- Reset check attempts after a successful find
+            fallbackAttempts = 0  -- Reset fallback attempts after a successful find
         end
 
         if not foundCreature then
@@ -148,15 +195,128 @@ local function checkForMoolet()
     end
 end
 
+local function checkQuestAndCapture()
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    local stopDistance = 5 -- Adjust this distance to stop before the object
+    
+    -- Player position at world 8 center
+    humanoidRootPart.CFrame = CFrame.new(89.12157440185547, 5.388832092285156, -64.87527465820312)
+    task.wait(1) -- Wait for teleport to complete
+
+    while _G.autoQuest do
+        local questText = game:GetService("Players").LocalPlayer.PlayerGui.QuestTrackerUI.Frame.textFrame.objective.title1.Text
+        local targetPokemon = nil
+        local fallbackPokemon = nil
+
+        -- Find target and fallback Pokémon from the quest text
+        for _, group in ipairs(questPokemonList) do
+            if questText:find(group[1]) then
+                targetPokemon = group[1]
+                fallbackPokemon = group[2] or group[1]
+                break
+            end
+        end
+
+        if targetPokemon then
+            local foundCreature = false
+            local attempts = 0
+
+            while not foundCreature and attempts < 10 do
+                attempts = attempts + 1
+
+                for _, creature in ipairs(workspace.Creatures:GetChildren()) do
+                    local playerNameText = creature:FindFirstChild("RootPart")
+                        and creature.RootPart:FindFirstChild("TitanNameplate")
+                        and creature.RootPart.TitanNameplate:FindFirstChild("InfoFrame")
+                        and creature.RootPart.TitanNameplate.InfoFrame:FindFirstChild("PlayerName")
+                        and creature.RootPart.TitanNameplate.InfoFrame.PlayerName.Text
+
+                    if playerNameText and playerNameText:find(targetPokemon) then
+                        -- Calculate the position to stop before the object
+                        local targetPosition = creature:GetPrimaryPartCFrame().Position
+                        local direction = (targetPosition - humanoidRootPart.Position).unit
+                        local stopPosition = targetPosition - direction * stopDistance
+
+                        -- Move character to the stop position facing the object
+                        humanoid:MoveTo(stopPosition)
+                        humanoid.MoveToFinished:Wait()  -- Wait until movement is finished
+
+                        -- Execute the taming code
+                        tameCreature(creature.Name)
+                        foundCreature = true
+                        task.wait(1)
+
+                        -- Check if quest is completed
+                        local captures = game:GetService("Players").LocalPlayer.leaderstats.Captures.Value
+
+                        -- Request release of the captured creature
+                        local releaseArgs = { [1] = "@" .. tostring(captures) }
+                        game:GetService("ReplicatedStorage")
+                            :WaitForChild("Packages")
+                            :WaitForChild("_Index")
+                            :WaitForChild("sleitnick_knit@1.7.0")
+                            :WaitForChild("knit")
+                            :WaitForChild("Services")
+                            :WaitForChild("CreatureService")
+                            :WaitForChild("RF")
+                            :WaitForChild("RequestReleasePet")
+                            :InvokeServer(unpack(releaseArgs))
+                        task.wait()
+
+                        break
+                    end
+                end
+
+                if not foundCreature and attempts == 5 then
+                    -- Switch to fallback Pokémon if the target Pokémon is not found after 5 attempts
+                    targetPokemon = fallbackPokemon
+                end
+            end
+
+            -- Request to complete the quest
+            local completeQuestArgs = { [1] = "#8" }
+            game:GetService("ReplicatedStorage")
+                :WaitForChild("Packages")
+                :WaitForChild("_Index")
+                :WaitForChild("sleitnick_knit@1.7.0")
+                :WaitForChild("knit")
+                :WaitForChild("Services")
+                :WaitForChild("PlayerService")
+                :WaitForChild("RF")
+                :WaitForChild("RequestCompleteNpcQuest")
+                :InvokeServer(unpack(completeQuestArgs))
+
+            task.wait()
+            -- Request a new quest
+            local startQuestArgs = { [1] = "#8" }
+            game:GetService("ReplicatedStorage")
+                :WaitForChild("Packages")
+                :WaitForChild("_Index")
+                :WaitForChild("sleitnick_knit@1.7.0")
+                :WaitForChild("knit")
+                :WaitForChild("Services")
+                :WaitForChild("PlayerService")
+                :WaitForChild("RF")
+                :WaitForChild("RequestStartNpcQuest")
+                :InvokeServer(unpack(startQuestArgs))
+        end
+        
+        task.wait(1)
+    end
+end
+
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/miroeramaa/TurtleLib/main/TurtleUiLib.lua"))()
 local window = library:Window("farm")
 
-window:Toggle("find Poke", false, function(bool)
+window:Toggle("find Moolet", false, function(bool)
     _G.auto2 = bool
     if _G.auto2 then
         task_defer(checkForMoolet)
     end
 end)
+
 window:Button("world 6 start", function() 
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
@@ -167,10 +327,12 @@ window:Button("world 6 start", function()
     -- Teleport the character to the target position
     humanoidRootPart.CFrame = CFrame.new(targetPosition) 
 end)
+
 window:Toggle("world 6", false, function(bool)
     _G.auto = bool
     task_defer(moveToAndInvoke(objectNames))
 end)
+
 window:Button("world 7 start", function() 
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
@@ -203,4 +365,16 @@ window:Toggle("world 4 iron", false, function(bool)
     task_defer(moveToAndInvoke(objectNames3))
 end)
 
+window:Toggle("quest capture", false, function(bool)
+    _G.autoQuest = bool
+    if _G.autoQuest then
+        task_defer(checkQuestAndCapture)
+    end
+end)
+
 library:Keybind("P")
+
+
+
+--https://raw.githubusercontent.com/bledziio/letit/refs/heads/main/katch
+--loadstring(game:HttpGet("https://raw.githubusercontent.com/bledziio/letit/refs/heads/main/katch"))()
