@@ -27,6 +27,7 @@ local pokemonLists = {
 
 local task_defer = task.defer
 
+
 local function invokeService(servicePath, args)
     print("Invoking service: " .. servicePath)
     game:GetService("ReplicatedStorage")
@@ -158,25 +159,28 @@ local function checkQuestAndCapture()
     print("Teleported to world center: " .. tostring(centerPosition))
     task.wait(1) -- Wait for teleport to complete
     summonPartnerCreature()
-    setPlayerMoveSpeed(91)
+    setPlayerMoveSpeed(200)
 
-    -- Flag to avoid repeated summoning
+    -- Flag to avoid repeated actions
     local respawnedFlag = false
 
     -- Respawn handler
     local function onRespawned()
         if not respawnedFlag then
             respawnedFlag = true
+            task.wait(1) -- Ensure enough time for respawn process
             humanoidRootPart.CFrame = CFrame.new(centerPosition)
             print("Teleported back to world center after respawn")
             task.wait(1) -- Wait for teleport to complete
             summonPartnerCreature()
-            setPlayerMoveSpeed(91)
+            setPlayerMoveSpeed(200)
             respawnedFlag = false
         end
     end
 
     player.CharacterAdded:Connect(onRespawned)
+
+
     while _G.autoQuest do
         print("AutoQuest is running")
         local questText = game:GetService("Players").LocalPlayer.PlayerGui.QuestTrackerUI.Frame.textFrame.objective.title1.Text
@@ -277,6 +281,8 @@ end
 
 
 
+
+
 -- Load OrionLib
 local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/shlexware/Orion/main/source'))()
 
@@ -312,7 +318,7 @@ Tab:AddDropdown({
 
 -- Quest capture toggle
 Tab:AddToggle({
-    Name = "Questo Capture",
+    Name = "333Quest Capture",
     Default = false,
     Callback = function(bool)
         _G.autoQuest = bool
