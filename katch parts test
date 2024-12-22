@@ -12,6 +12,7 @@ local questPokemonList = {
 }
 
 local function invokeService(servicePath, args)
+    print("Invoking service: " .. servicePath)
     game:GetService("ReplicatedStorage")
         :WaitForChild("Packages")
         :WaitForChild("_Index")
@@ -76,12 +77,16 @@ local function checkQuestAndCapture()
                         and creature.RootPart.TitanNameplate.InfoFrame:FindFirstChild("PlayerName")
                         and creature.RootPart.TitanNameplate.InfoFrame.PlayerName.Text
 
+                    print("Checking creature: " .. creature.Name .. " | Player Name: " .. (playerNameText or "nil"))
+
                     if playerNameText and playerNameText:find(targetPokemon) then
-                        print("Found target Pooooookemon: " .. creature.Name)
+                        print("Found target Pokemon: " .. creature.Name)
                         -- Calculate the position to stop before the object
                         local targetPosition = creature:GetPrimaryPartCFrame().Position
                         local direction = (targetPosition - humanoidRootPart.Position).unit
                         local stopPosition = targetPosition - direction * stopDistance
+
+                        print("Target Position: " .. tostring(targetPosition) .. " | Stop Position: " .. tostring(stopPosition))
 
                         -- Move character to the stop position facing the object
                         humanoid:MoveTo(stopPosition)
