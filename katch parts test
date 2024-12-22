@@ -38,6 +38,7 @@ local function checkQuestAndCapture()
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
     local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+    local humanoid = character:WaitForChild("Humanoid")
     local stopDistance = 5 -- Adjust this distance to stop before the object
     
     -- Player position at world 8 center
@@ -91,6 +92,8 @@ local function checkQuestAndCapture()
                         -- Move character to the stop position facing the object
                         print("Attempting to move to stop position")
                         humanoid:MoveTo(stopPosition)
+                        print("MoveTo command issued")
+
                         humanoid.MoveToFinished:Connect(function(reached)
                             if reached then
                                 print("Reached target Pokemon")
@@ -104,7 +107,10 @@ local function checkQuestAndCapture()
                         end)
 
                         -- Wait until movement is finished
-                        task.wait(1) -- Adjust this wait time if needed
+                        for _ = 1, 10 do
+                            if foundCreature then break end
+                            task.wait(1) -- Adjust this wait time if needed
+                        end
                         
                         if foundCreature then
                             -- Check if quest is completed
@@ -148,7 +154,7 @@ end
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/miroeramaa/TurtleLib/main/TurtleUiLib.lua"))()
 local window = library:Window("quest")
 
-window:Toggle("quest cccccapture", false, function(bool)
+window:Toggle("quest capture", false, function(bool)
     _G.autoQuest = bool
     if _G.autoQuest then
         task_defer(checkQuestAndCapture)
