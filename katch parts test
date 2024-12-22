@@ -1,31 +1,8 @@
--- Define Pokémon lists for different worlds
-local pokemonLists = {
-    world8 = {
-        {name = "Bouldrunt", fallback = "Bouldram", coords = Vector3.new(1972, 0, -1116)},
-        {name = "Voidpup", fallback = "Voidstalker", coords = Vector3.new(1571.59716796875, 0, -1052.0155029296875)},
-        {name = "Frostkit", fallback = "Frostfang", coords = Vector3.new(1932, 0, -1276)},
-        {name = "Quarrykit", fallback = "Quarryclaw", coords = Vector3.new(2004, 0, -823.270263671875)},
-        {name = "Driplet", fallback = "Hydromusk", coords = Vector3.new(1668, 0, -1268)},
-        {name = "Terrazee", fallback = "Terrakong", coords = Vector3.new(1668, 0, -1268)},
-        {name = "Gemara", fallback = nil, coords = Vector3.new(1796, 0, -1060)}
-        -- Add more entries for World 8
-    },
-    world9 = {
-        {name = "Lavasnip", fallback = "Lavafang", coords = Vector3.new(2000, 0, -1500)},
-        {name = "Abysspup", fallback = "Abyssstalker", coords = Vector3.new(1600, 0, -1300)},
-        -- Add more entries for World 9
-    },
-    world10 = {
-        {name = "Stormkit", fallback = "Stormfang", coords = Vector3.new(1800, 0, -1200)},
-        {name = "Cavernkit", fallback = "Cavernclaw", coords = Vector3.new(1900, 0, -1100)},
-        -- Add more entries for World 10
-    }
-}
-
-
 _G.autoQuest = false
 _G.selectedBall = "#2"
 _G.selectedWorld = "world8" -- Default world
+_G.partnerCreature = "@424" -- Global variable for partner creature
+
 local task_defer = task.defer
 
 local function invokeService(servicePath, args)
@@ -106,6 +83,39 @@ local function moveToPosition(humanoid, targetPosition, stopDistance)
     return reached
 end
 
+local function summonPartnerCreature()
+    local deployArgs = { _G.partnerCreature }
+    invokeCreatureService("RequestDeployPetInit", deployArgs)
+    print("Summoned partner creature: " .. _G.partnerCreature)
+end
+
+local function attackFallbackPokemon(creatureName)
+    -- Recall partner creature
+    local recallArgs = { _G.partnerCreature }
+    invokeCreatureService("RequestRecallPet", recallArgs)
+    print("Recalled partner creature: " .. _G.partnerCreature)
+
+    -- Resummon partner creature
+    summonPartnerCreature()
+    
+    -- Attack logic
+    print("Attacking fallback Pokemon: " .. creatureName)
+
+    -- Use ultimate skill after 2 seconds
+    task.wait(2)
+    local ultimateArgs = { _G.partnerCreature, 5 }
+    invokeCreatureService("RequestCreatureBehaviorChange", ultimateArgs)
+    print("Used ultimate skill of partner creature: " .. _G.partnerCreature)
+end
+
+local function setPlayerMoveSpeed(speed)
+    local player = game.Players.LocalPlayer
+    local character = player.Character or player.CharacterAdded:Wait()
+    local humanoid = character:WaitForChild("Humanoid")
+
+    humanoid.WalkSpeed = speed
+    print("Set player move speed to: " .. speed)
+end
 
 local function checkQuestAndCapture()
     print("Starting checkQuestAndCapture")
@@ -125,6 +135,19 @@ local function checkQuestAndCapture()
     humanoidRootPart.CFrame = CFrame.new(centerPosition)
     print("Teleported to world center: " .. tostring(centerPosition))
     task.wait(1) -- Wait for teleport to complete
+    summonPartnerCreature()
+    setPlayerMoveSpeed(91)
+
+    -- Respawn handler
+    local function onRespawned()
+        humanoidRootPart.CFrame = CFrame.new(centerPosition)
+        print("Teleported back to world center after respawn")
+        task.wait(1) -- Wait for teleport to complete
+        summonPartnerCreature()
+        setPlayerMoveSpeed(91)
+    end
+
+    player.CharacterAdded:Connect(onRespawned)
 
     while _G.autoQuest do
         print("AutoQuest is running")
@@ -202,19 +225,20 @@ local function checkQuestAndCapture()
                         targetPokemon = fallbackPokemon
                         print("Switching to fallback Pokemon: " .. fallbackPokemon)
                         attempts = 0 -- Reset attempts for the fallback Pokemon search
+                        attackFallbackPokemon(targetPokemon)
                     end
                 end
             end
 
             -- Request to complete the quest
-            local completeQuestArgs = { [1] = "#8" }
+            local completeQuestArgs = { [1] = "#" .. string.sub(_G.selectedWorld, -1) }
             invokeService("RequestCompleteNpcQuest", completeQuestArgs)
-            print("Requested quest completion")
+            print("Requested quest completion for world: " .. _G.selectedWorld)
 
             -- Request a new quest
-            local startQuestArgs = { [1] = "#8" }
+            local startQuestArgs = { [1] = "#" .. string.sub(_G.selectedWorld, -1) }
             invokeService("RequestStartNpcQuest", startQuestArgs)
-            print("Requested new quest")
+            print("Requested new quest for world: " .. _G.selectedWorld)
         else
             print("No matching Pokemon found in quest text")
         end
@@ -281,4 +305,3 @@ Tab:AddBind({
 
 print("Setup complete")
 OrionLib:Init()
-
