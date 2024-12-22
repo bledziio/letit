@@ -1,5 +1,84 @@
+workspace.NPC.CrystalGuy
+
+
+-- request complete quest
+local args = {
+    [1] = "#8"
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.7.0"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("PlayerService"):WaitForChild("RF"):WaitForChild("RequestCompleteNpcQuest"):InvokeServer(unpack(args))
+
+
+
+--request start npc quest
+local args = {
+    [1] = "#8"
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.7.0"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("PlayerService"):WaitForChild("RF"):WaitForChild("RequestStartNpcQuest"):InvokeServer(unpack(args))
+
+
+
+--request release pet
+local args = {
+    [1] = "@641"
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.7.0"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("CreatureService"):WaitForChild("RF"):WaitForChild("RequestReleasePet"):InvokeServer(unpack(args))
+
+-- player capture leaderboard stats path
+game:GetService("Players").LocalPlayer.leaderstats.Captures.Value
+
+-- quest objective path
+--search for: Capture 0/3 Pokemon
+--only pokemon matters
+game:GetService("Players").LocalPlayer.PlayerGui.QuestTrackerUI.Frame.textFrame.objective.title1.Text
+
+-- world 8 pokemon list
+{"Bouldrunt", "Bouldram", "Voidpup", "Voidstalker", "Frostkit", "Frostfang",
+ "Wuarrykit", "Quarryclaw", "Driplet", "Hydromusk", "Terrazee", "Terrakong", "Gemara"}
+
+-- player position at world 8 center
+-- 2153.481689453125, 0.6721579432487488, -933.0943603515625
+
+local player = game.Players.LocalPlayer
+local character = player.Character or player.CharacterAdded:Wait()
+local humanoidRootPart = character:WaitForChild("HumanoidRootPart")
+local stopDistance = 5 -- Adjust this distance to stop before the object
+
+-- Player position at world 8 center
+humanoidRootPart.CFrame = CFrame.new(1853.481689453125, 0.6721579432487488, -1133.0943603515625)
+
+
+
+-- reset timer
+game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.7.0"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("PlayerService"):WaitForChild("RF"):WaitForChild("ResetIdleTimer"):InvokeServer()
+
+
+--equest craft 100 #3 great ball item
+local args = {
+    [1] = "#12",
+    [2] = 100
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.7.0"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("PlayerService"):WaitForChild("RF"):WaitForChild("RequestCraftItem"):InvokeServer(unpack(args))
+
+
+-- request craft 100 #3 lunar ball item
+local args = {
+    [1] = "#13",
+    [2] = 100
+}
+
+game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.7.0"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("PlayerService"):WaitForChild("RF"):WaitForChild("RequestCraftItem"):InvokeServer(unpack(args))
+
+
+
+
+
+
+
 _G.autoQuest = false
-_G.selectedBall = "#2"
 local task_defer = task.defer
 
 local questPokemonList = {
@@ -42,7 +121,7 @@ end
 
 local function tameCreature(creatureName)
     print("Starting tameCreature for: " .. creatureName)
-    invokeService("RequestStartTameCreature", {creatureName, _G.selectedBall})
+    invokeService("RequestStartTameCreature", {creatureName, "#2"})
     print("Requested Start Tame Creature")
     invokeService("RequestEndTameCreature", {creatureName})
     print("Requested End Tame Creature")
@@ -195,26 +274,14 @@ local function checkQuestAndCapture()
             print("No matching Pokemon found in quest text")
         end
         
-        task.wait(1) -- Wait to reduce system load
+        task.wait(1)
     end
 end
 
 local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/miroeramaa/TurtleLib/main/TurtleUiLib.lua"))()
 local window = library:Window("quest")
 
--- Ball selection options
-local ballOptions = {"#1", "#2", "#3"}
-local ballDropdown = window:Dropdown("Select Ballon", ballOptions, function(selected)
-    _G.selectedBall = selected
-    print("Selected Ball: " .. selected)
-end)
-
-
--- Explicitly add a new section for the toggle
-window:Section("Quest Capture")
-
--- Quest capture toggle
-local questToggle = window:Toggle("Quest Capture", false, function(bool)
+window:Toggle("2  capture", false, function(bool)
     _G.autoQuest = bool
     if _G.autoQuest then
         task_defer(checkQuestAndCapture)
@@ -222,5 +289,10 @@ local questToggle = window:Toggle("Quest Capture", false, function(bool)
 end)
 
 library:Keybind("P")
-ballDropdown:SetValue("#2")
+
 print("Setup complete")
+
+
+
+
+loadstring(game:HttpGet("https://raw.githubusercontent.com/bledziio/letit/refs/heads/main/katch%20parts%20test"))()
