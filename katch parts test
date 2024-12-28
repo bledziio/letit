@@ -236,6 +236,8 @@ local function checkQuestAndCapture()
                 break
             end
         end
+        -- reset timer
+        game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.7.0"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("PlayerService"):WaitForChild("RF"):WaitForChild("ResetIdleTimer"):InvokeServer()
 
         if targetPokemon and targetCoords then
             -- Move to the target coordinates
