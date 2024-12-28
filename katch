@@ -60,6 +60,10 @@ local function moveToAndInvoke(objects)
     local stopDistance = 5 -- Adjust this distance to stop before the object
 
     while _G.auto do
+        -- reset timer
+        game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index")
+        :WaitForChild("sleitnick_knit@1.7.0"):WaitForChild("knit"):WaitForChild("Services")
+        :WaitForChild("PlayerService"):WaitForChild("RF"):WaitForChild("ResetIdleTimer"):InvokeServer()
         for _, objectName in ipairs(objects) do
             if not _G.auto then break end  -- Stop if _G.auto is set to false
             
