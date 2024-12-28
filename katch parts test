@@ -4,6 +4,32 @@ _G.selectedWorld = "world8" -- Default world
 _G.partnerCreature = "@424" -- Global variable for partner creature
 -- Define Pokémon lists for different worlds
 local pokemonLists = {
+    world1 = {
+        {name = "Placeholder1", fallback = "Fallback1", coords = Vector3.new(0, 0, 0)}
+    },
+    world2 = {
+        {name = "Placeholder2", fallback = "Fallback2", coords = Vector3.new(0, 0, 0)}
+    },
+    world3 = {
+        {name = "Moonkit", fallback = "Moonclaw", coords = Vector3.new(156.05203247070312, 0, -1626.713623046875)},
+        {name = "Pyrofury", fallback = "Flarepup", coords = Vector3.new(492, 0, -1996)},
+        {name = "Emberpuff", fallback = "Flamepuff", coords = Vector3.new(179.0497283935547, 0, -1963.0498046875)},
+        {name = "Pebbletusk", fallback = "Bouldertusk", coords = Vector3.new(156, 0, -1796)},
+        {name = "Oryxlet", fallback = "Oryx", coords = Vector3.new(431.1357421875, 0, -1631.1357421875)},
+        {name = "Lumipuff", fallback = "Lumituff", coords = Vector3.new(492, 0, -1996)}
+    },
+    world4 = {
+        {name = "Placeholder4", fallback = "Fallback4", coords = Vector3.new(0, 0, 0)}
+    },
+    world5 = {
+        {name = "Placeholder5", fallback = "Fallback5", coords = Vector3.new(0, 0, 0)}
+    },
+    world6 = {
+        {name = "Placeholder6", fallback = "Fallback6", coords = Vector3.new(0, 0, 0)}
+    },
+    world7 = {
+        {name = "Placeholder7", fallback = "Fallback7", coords = Vector3.new(0, 0, 0)}
+    },
     world8 = {
         {name = "Bouldrunt", fallback = "Bouldram", coords = Vector3.new(1972, 0, -1116)},
         {name = "Voidpup", fallback = "Voidstalker", coords = Vector3.new(1571.59716796875, 0, -1052.0155029296875)},
@@ -17,13 +43,9 @@ local pokemonLists = {
         {name = "Lavasnip", fallback = "Lavafang", coords = Vector3.new(2000, 0, -1500)},
         {name = "Abysspup", fallback = "Abyssstalker", coords = Vector3.new(1600, 0, -1300)},
         -- Add more entries for World 9 as needed
-    },
-    world10 = {
-        {name = "Stormkit", fallback = "Stormfang", coords = Vector3.new(1800, 0, -1200)},
-        {name = "Cavernkit", fallback = "Cavernclaw", coords = Vector3.new(1900, 0, -1100)},
-        -- Add more entries for World 10 as needed
     }
 }
+
 
 local task_defer = task.defer
 
@@ -152,7 +174,7 @@ local function checkQuestAndCapture()
     local worldCenters = {
         world8 = Vector3.new(1853.481689453125, 0.6721579432487488, -1133.0943603515625),
         world9 = Vector3.new(1900, 0, -1400),
-        world10 = Vector3.new(1950, 0, -1200)
+        world3 = Vector3.new(431.1357421875, 0, -1631.1357421875)
     }
     local centerPosition = worldCenters[_G.selectedWorld] or worldCenters["world8"]
     humanoidRootPart.CFrame = CFrame.new(centerPosition)
@@ -307,7 +329,8 @@ local Window = OrionLib:MakeWindow({Name = "Quest GUI", HidePremium = false, Sav
 local Tab = Window:MakeTab({Name = "Quest", Icon = "rbxassetid://4483345998", PremiumOnly = false})
 
 -- World selection options
-local worldOptions = {"world8", "world9", "world10"}
+local worldOptions = {"world1", "world2", "world3","world4", "world5",
+"world6", "world7", "world8", "world9"}
 Tab:AddDropdown({
     Name = "Select World",
     Default = "world8",
@@ -332,7 +355,7 @@ Tab:AddDropdown({
 
 -- Quest capture toggle
 Tab:AddToggle({
-    Name = "Qutttest Capture",
+    Name = "Quest Capture",
     Default = false,
     Callback = function(bool)
         _G.autoQuest = bool
