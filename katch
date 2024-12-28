@@ -11,6 +11,7 @@ local maxFallbackAttempts = 3
 local objectNames = {"#1083", "#938", "#1140", "#212", "#209", "#358", "#1081", "#616", "#1082", "#970"}
 local objectNames2 = {"#1016", "#1090", "#148", "#926", "#1091", "#156", "#1099", "#395", "#415", "#865"}
 local objectNames3 = {"#996", "#988", "#1065", "#995", "#1062", "#1063", "#1064", "#1066"}
+local objectNames4 = {"#719", "#364", "#201", "#245", "#187", "#718", "#1096", "#720"}
 local questPokemonList = {
     {"Bouldrunt", "Bouldram"},
     {"Voidpup", "Voidstalker"},
@@ -348,7 +349,10 @@ window:Toggle("world 7", false, function(bool)
     _G.auto = bool
     task_defer(moveToAndInvoke(objectNames2))
 end)
-
+window:Toggle("world 7 wood ", false, function(bool)
+    _G.auto = bool
+    task_defer(moveToAndInvoke(objectNames4))
+end)
 window:Button("mundo 4 start", function() 
     local player = game.Players.LocalPlayer
     local character = player.Character or player.CharacterAdded:Wait()
