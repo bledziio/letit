@@ -12,7 +12,7 @@ local pokemonLists = {
     },
     world3 = {
         {name = "Moonkit", fallback = "Moonclaw", coords = Vector3.new(156.05203247070312, 0, -1626.713623046875)},
-        {name = "Pyrofury", fallback = "Flarepup", coords = Vector3.new(492, 0, -1996)},
+        {name = "Flarepup", fallback = "Pyrofury", coords = Vector3.new(492, 0, -1996)},
         {name = "Emberpuff", fallback = "Flamepuff", coords = Vector3.new(179.0497283935547, 0, -1963.0498046875)},
         {name = "Pebbletusk", fallback = "Bouldertusk", coords = Vector3.new(156, 0, -1796)},
         {name = "Oryxlet", fallback = "Oryx", coords = Vector3.new(431.1357421875, 0, -1631.1357421875)},
