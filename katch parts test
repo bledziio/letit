@@ -328,12 +328,12 @@ local OrionLib = loadstring(game:HttpGet('https://raw.githubusercontent.com/shle
 local Window = OrionLib:MakeWindow({Name = "Quest GUI", HidePremium = false, SaveConfig = true, ConfigFolder = "OrionTest"})
 
 -- Create tabs
-local Tab = Window:MakeTab({Name = "Quest", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local QuestTab = Window:MakeTab({Name = "Quest", Icon = "rbxassetid://4483345998", PremiumOnly = false})
+local PokeballTab = Window:MakeTab({Name = "Pokeballs", Icon = "rbxassetid://4483345998", PremiumOnly = false})
 
 -- World selection options
-local worldOptions = {"world1", "world2", "world3","world4", "world5",
-"world6", "world7", "world8", "world9"}
-Tab:AddDropdown({
+local worldOptions = {"world1", "world2", "world3", "world4", "world5", "world6", "world7", "world8", "world9"}
+QuestTab:AddDropdown({
     Name = "Select World",
     Default = "world8",
     Options = worldOptions,
@@ -345,7 +345,7 @@ Tab:AddDropdown({
 
 -- Ball selection options
 local ballOptions = {"#1", "#2", "#3"}
-Tab:AddDropdown({
+QuestTab:AddDropdown({
     Name = "Select Ball",
     Default = "#2",
     Options = ballOptions,
@@ -356,7 +356,7 @@ Tab:AddDropdown({
 })
 
 -- Quest capture toggle
-Tab:AddToggle({
+QuestTab:AddToggle({
     Name = "Quest Capture",
     Default = false,
     Callback = function(bool)
@@ -368,12 +368,28 @@ Tab:AddToggle({
 })
 
 -- Add a keybind to open/close the UI
-Tab:AddBind({
+QuestTab:AddBind({
     Name = "Toggle UI",
     Default = Enum.KeyCode.P,
     Hold = false,
     Callback = function()
         OrionLib:ToggleUI()
+    end
+})
+
+-- Button to create 50 Pokeballs (#1)
+PokeballTab:AddButton({
+    Name = "Create 50 Pokeballs (#1)",
+    Callback = function()
+        local args = {
+            [1] = "#1",
+            [2] = 50
+        }
+        game:GetService("ReplicatedStorage"):WaitForChild("Packages")
+        :WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.7.0")
+        :WaitForChild("knit"):WaitForChild("Services"):WaitForChild("PlayerService")
+        :WaitForChild("RF"):WaitForChild("RequestCraftItem"):InvokeServer(unpack(args))
+        print("Created 50 Pokeballs (#1)")
     end
 })
 
